@@ -1,0 +1,608 @@
+{
+  "meta": {
+    "source": "e-PIC One (PIC Business Systems) — Rolli Home LLC account",
+    "captured": "2026-03-06",
+    "url": "https://100320.picbusiness.com/main.pic",
+    "note": "Schema extracted live from ADD Sales Order Item form. Group=ROLLER SHADE PRODUCTS, Product=PREMIUM ROLLER SERIES, Pattern/Model=SBM SERENE used as reference for full field set."
+  },
+
+  "order_level_fields": {
+    "note": "These appear on the first step (ADD Sales Order header) before line items",
+    "fields": {
+      "serviceId": {
+        "label": "Services",
+        "type": "select",
+        "required": true,
+        "options": [
+          "No Services with Order",
+          "Consultation",
+          "Cut Down",
+          "Drop Off",
+          "Install(old)",
+          "INSTALLATION",
+          "MEASURE",
+          "Measure(old)",
+          "Motor Replacement",
+          "REPAIR",
+          "Repair(old)",
+          "Sales Call",
+          "Send To Supplier for warranty",
+          "Shade Pick Up",
+          "TIME OFF",
+          "Timeslot HOLD"
+        ]
+      },
+      "Sidemark": {
+        "label": "Sidemark",
+        "type": "text",
+        "required": false,
+        "note": "Customer/project identifier shown on order"
+      },
+      "CustomerPO": {
+        "label": "Customer PO",
+        "type": "text",
+        "required": false
+      },
+      "Client": {
+        "label": "Client",
+        "type": "text/lookup",
+        "required": false,
+        "note": "References client ID in PIC client database"
+      },
+      "GeneralComments": {
+        "label": "General Comments",
+        "type": "textarea",
+        "required": false
+      }
+    }
+  },
+
+  "group_product_hierarchy": {
+    "groups": {
+      "MOTORIZATION CONTROL/ACCESORIES": { "value": "105" },
+      "ROLLER SHADE PRODUCTS": {
+        "value": "11000",
+        "products": {
+          "ROLLER SKYLINE MANUAL": "11000",
+          "ROLLER SKYLINE MOTORIZED": "11020",
+          "PREMIUM ROLLER SERIES": "11025",
+          "ROLLER CORDLESS SHADES": "11200",
+          "ROLLER SKYLINE BOTTOM UP": "15050",
+          "FABRIC PANEL ONLY (NO HARDWARE)": "18000",
+          "VALANCES & EXTRUSIONS (CUT TO SIZE)": "18100",
+          "MOTORIZATION COMPONENTS": "19000",
+          "MANUAL & COMMON ROLLER SHADE COMPONENTS": "19100"
+        }
+      },
+      "PANEL TRACK": { "value": "13500" },
+      "SKYLIGHTS": { "value": "15000" },
+      "DRAPERY TRACKS": { "value": "80000" }
+    }
+  },
+
+  "sbm_model_codes": {
+    "note": "All SBM_ prefixed models under PREMIUM ROLLER SERIES (11025). PIC value is the order system SKU code.",
+    "models": {
+      "SBM_ASTRABO":    "SBM ASTRA BO",
+      "SBM_ASTRALF":    "SBM ASTRA LF",
+      "SBM_BLOSSOM":    "SBM BLOSSOM",
+      "SBM_CITYSCAPE5": "SBM CITYSCAPE 5% LF",
+      "SBM_COSMOSBO":   "SBM COSMOS BO",
+      "SBM_COSMOSLF":   "SBM COSMOS LF",
+      "SBM_DENALIBO":   "SBM DENALI BO",
+      "SBM_DENALILF":   "SBM DENALI LF",
+      "SBM_DOT":        "SBM DOT",
+      "SBM_DUNEBO":     "SBM DUNE BO",
+      "SBM_DUNELF":     "SBM DUNE LF",
+      "SBM_EARTHBO":    "SBM EARTH BO",
+      "SBM_EARTHLF":    "SBM EARTH LF",
+      "SBM_ECLYPSE1":   "SBM ECLYPSE 1%",
+      "SBM_ECLYPSE3":   "SBM ECLYPSE 3%",
+      "SBM_EDGE":       "SBM EDGE",
+      "SBM_ELEGANCEBO": "SBM ELEGANCE BO",
+      "SBM_ELEGANCELF": "SBM ELEGANCE LF",
+      "SBM_ESSENCEBO":  "SBM ESSENCE BO",
+      "SBM_ESSENCELF":  "SBM ESSENCE LF",
+      "SBM_FOG":        "SBM FOG",
+      "SBM_HAZE":       "SBM HAZE",
+      "SBM_INFINITY":   "SBM INFINITY",
+      "SBM_LINENBO":    "SBM LINEN BO",
+      "SBM_LINENLF":    "SBM LINEN LF",
+      "SBM_LUSTRE":     "SBM LUSTRE BO",
+      "SBM_NANO55":     "SBM NANO55",
+      "SBM_NATURALBO":  "SBM NATURAL BO",
+      "SBM_NATURALLF":  "SBM NATURAL LF",
+      "SBM_OASIS":      "SBM OASIS",
+      "SBM_SEASCAPE1":  "SBM SEASCAPE 1% LF",
+      "SBM_SEASCAPE4":  "SBM SEASCAPE 4% LF",
+      "SBM_SERENE":     "SBM SERENE",
+      "SBM_SERENEFR":   "SBM SERENE FR",
+      "SBM_SHEERLIN":   "SBM SHEER LINEN",
+      "SBM_SPRINKLES":  "SBM SPRINKLES",
+      "SBM_STAR":       "SBM STAR",
+      "SBM_STARKBO":    "SBM STARK BO",
+      "SBM_STARKLF":    "SBM STARK LF",
+      "SBM_STARKRBO":   "SBM STARK RADIANCE BO",
+      "SBM_STARKRLF":   "SBM STARK RADIANCE LF",
+      "SBM_WILLOW":     "SBM WILLOW"
+    }
+  },
+
+  "line_item_fields": {
+    "note": "All fields present when Group=ROLLER SHADE PRODUCTS, Product=PREMIUM ROLLER SERIES, Pattern=any SBM fabric",
+
+    "Qty": {
+      "label": "Quantity",
+      "type": "number",
+      "default": 1,
+      "required": true
+    },
+
+    "Color": {
+      "label": "Color",
+      "type": "select",
+      "required": false,
+      "note": "Fabric colorway — options are fabric-specific, loaded dynamically per Pattern/Model",
+      "example_options_for_SBM_SERENE": ["Serene Licorice", "Serene Natural Almond"]
+    },
+
+    "ColorNumber": {
+      "label": "Color Number",
+      "type": "text",
+      "required": false,
+      "note": "Manual color code override"
+    },
+
+    "Style": {
+      "label": "Style",
+      "type": "select",
+      "required": true,
+      "default": "S45 SINGLE SHADE",
+      "options": [
+        "S45 SINGLE SHADE",
+        "S45 SINGLE SHADE W/3\" POCKET",
+        "S45 SINGLE SHADE W/4\" POCKET",
+        "S45 CF90 FASCIA",
+        "S45 W/ SQUARE CASSETTE 110",
+        "S45 DUAL SHADE",
+        "S45 COUPLED SHADE",
+        "S45 DUAL COUPLED SHADE",
+        "COULISSE ABSOLUTE OPEN ROLL",
+        "COULISSE ABSOLUTE W/ FASCIA"
+      ],
+      "note": "Style determines which additional fields appear (dual shade, fascia, coulisse, coupled)"
+    },
+
+    "OverallWidth": {
+      "label": "Overall Width",
+      "type": "number + fraction",
+      "required": true,
+      "min_inches": 11,
+      "max_inches": 360,
+      "fraction_options": ["1/8", "1/4", "3/8", "1/2", "5/8", "3/4", "7/8"],
+      "note": "Integer part + fraction dropdown. E.g. 48 + 1/4 = 48.25\""
+    },
+
+    "Height": {
+      "label": "Height",
+      "type": "number + fraction",
+      "required": true,
+      "min_inches": 14,
+      "max_inches": 230,
+      "fraction_options": ["1/8", "1/4", "3/8", "1/2", "5/8", "3/4", "7/8"]
+    },
+
+    "Mount": {
+      "label": "Mount",
+      "type": "select",
+      "required": true,
+      "default": "INSIDE MOUNT",
+      "options": ["INSIDE MOUNT", "OUTSIDE MOUNT"]
+    },
+
+    "MountType": {
+      "label": "Mount Type",
+      "type": "select",
+      "required": false,
+      "options": ["WALL/CEILING MOUNT", "CEILING MOUNT ONLY"],
+      "note": "Appears for outside mount configurations"
+    },
+
+    "ControlType": {
+      "label": "Control Type",
+      "type": "select",
+      "required": true,
+      "default": "PLEASE SELECT:",
+      "options": [
+        "SOMFY",
+        "ROLLEASE",
+        "CHAINWINDER CLUTCH",
+        "CRANK GEAR SYSTEM W/3.2 FT HANDLE",
+        "CRANK GEAR SYSTEM W/4.9 FT HANDLE",
+        "CRANK GEAR SYSTEM W/6.5 FT HANDLE"
+      ],
+      "note": "Selecting SOMFY or ROLLEASE reveals motor sub-options"
+    },
+
+    "MotorType": {
+      "label": "Motor Type",
+      "type": "select",
+      "required": false,
+      "options": ["DRY CONTACT", "LINE VOLTAGE WIRED CONTROL"],
+      "note": "Appears when ControlType = SOMFY or ROLLEASE"
+    },
+
+    "SomfyMotors": {
+      "label": "Somfy Motors",
+      "type": "select",
+      "required": false,
+      "note": "Dynamic — appears when ControlType=SOMFY. Options loaded from PIC motor catalog."
+    },
+
+    "RolleaseMotors": {
+      "label": "Rollease Motors",
+      "type": "select",
+      "required": false,
+      "note": "Dynamic — appears when ControlType=ROLLEASE. Options loaded from PIC motor catalog."
+    },
+
+    "WandLength": {
+      "label": "Wand length",
+      "type": "select",
+      "required": false,
+      "options": ["20\"", "40\""],
+      "note": "Appears for manual chain/wand control types"
+    },
+
+    "TubeSize": {
+      "label": "Tube Size",
+      "type": "select",
+      "required": true,
+      "default": "LITE",
+      "options": ["LITE", "STD", "HEAVY DUTY"]
+    },
+
+    "Brackets": {
+      "label": "Brackets",
+      "type": "select",
+      "required": true,
+      "default": "PROJECTION 40 - WHITE",
+      "options": [
+        "PROJECTION 40 - BLACK",
+        "PROJECTION 40 - GRAY",
+        "PROJECTION 40 - WHITE",
+        "PROJECTION 55 - BLACK",
+        "PROJECTION 55 - GRAY",
+        "PROJECTION 55 - WHITE"
+      ]
+    },
+
+    "BracketCovers": {
+      "label": "Bracket Covers",
+      "type": "select",
+      "default": "NO",
+      "options": ["NO"]
+    },
+
+    "ControlLocation": {
+      "label": "Control Location",
+      "type": "select",
+      "required": true,
+      "default": "RIGHT",
+      "options": ["RIGHT", "LEFT"]
+    },
+
+    "RollDirection": {
+      "label": "Roll Direction",
+      "type": "select",
+      "required": true,
+      "default": "STANDARD ROLL",
+      "options": ["STANDARD ROLL", "REVERSE ROLL"]
+    },
+
+    "RailroadFabric": {
+      "label": "Railroad Fabric",
+      "type": "select",
+      "default": "NO",
+      "options": ["NO", "YES"],
+      "note": "For very wide shades requiring fabric seams"
+    },
+
+    "Hembar": {
+      "label": "Hembar",
+      "type": "select",
+      "required": true,
+      "default": "PREMIUM OVAL HEMBAR W/ END CAPS (OPEN SIDE HEM)",
+      "options": [
+        "SEALED HEMBAR",
+        "D30 - Black",
+        "D30 - Gray",
+        "D30 - White",
+        "EXPOSED SLIM DESIGNER BAR (WHITE ONLY)",
+        "EXPOSED ROUND - Black",
+        "EXPOSED ROUND - BRONZE",
+        "EXPOSED ROUND - Gray",
+        "EXPOSED ROUND - Vanilla",
+        "EXPOSED ROUND - White",
+        "FABRIC WRAPPED - Black",
+        "FABRIC WRAPPED - BRONZE",
+        "FABRIC WRAPPED - Gray",
+        "FABRIC WRAPPED - Vanilla",
+        "FABRIC WRAPPED - White",
+        "HALF WRAP HEMBAR (NEW) - BLACK",
+        "HALF WRAP HEMBAR (NEW) - Anodized",
+        "HALF WRAP HEMBAR (NEW) - White",
+        "PREMIUM OVAL HEMBAR W/ END CAPS (OPEN SIDE HEM)"
+      ]
+    },
+
+    "OvalHembarEndCapColor": {
+      "label": "Oval Hembar End Cap Color",
+      "type": "select",
+      "required": false,
+      "options": [
+        "END CAP COLOR - Black",
+        "END CAP COLOR - Bronze",
+        "END CAP COLOR - Grey",
+        "END CAP COLOR - Vanilla",
+        "END CAP COLOR - White"
+      ],
+      "note": "Only relevant when Hembar = PREMIUM OVAL HEMBAR W/ END CAPS"
+    },
+
+    "MagneticBottomBar": {
+      "label": "Magnetic Bottom Bar",
+      "type": "checkbox",
+      "default": false
+    },
+
+    "SillSideChannel": {
+      "label": "Sill/Side Channel / Guide Cables",
+      "type": "select",
+      "default": "NOT SELECTED",
+      "options": [
+        "NOT SELECTED",
+        "SOLAR BAR",
+        "GUIDE TRACKS",
+        "1.5\" SIDE \"U\" CHANNEL ONLY - WHITE ONLY",
+        "1.5\" SILL \"U\" CHANNEL ONLY - WHITE ONLY",
+        "1.5\" SIDE & SILL \"U\" CHANNEL ONLY - WHITE ONLY"
+      ]
+    },
+
+    "ChannelColor": {
+      "label": "Channel Color",
+      "type": "select",
+      "options": ["BLACK", "ANODIZED", "WHITE"],
+      "note": "Appears when SillSideChannel is not NOT SELECTED"
+    },
+
+    "ClosureOptions": {
+      "label": "Closure Options",
+      "type": "select",
+      "default": "NOT SELECTED",
+      "options": [
+        "NOT SELECTED",
+        "CLOSURE AND HANGER (WHITE ONLY)",
+        "CLOSURE (WHITE ONLY)",
+        "I-CLIP",
+        "L-CLIP"
+      ]
+    },
+
+    "RoomLocation": {
+      "label": "Room Location",
+      "type": "text",
+      "required": false,
+      "note": "Free-text label for the room (e.g. 'Master Bedroom', 'Living Room')"
+    },
+
+    "Description": {
+      "label": "Special Instruction",
+      "type": "textarea",
+      "required": false,
+      "note": "Available on the Special Instruction tab"
+    }
+  },
+
+  "dual_shade_additional_fields": {
+    "note": "These fields appear when Style = S45 DUAL SHADE or S45 DUAL COUPLED SHADE",
+    "BackShadeFabric": {
+      "label": "Back Shade Fabric",
+      "type": "select",
+      "note": "Same fabric list as Pattern/Model — full 152-item list"
+    },
+    "BackShadeHembar": {
+      "label": "Back Shade Hembar",
+      "type": "select",
+      "options": [
+        "SEALED HEMBAR", "D30 - Black", "D30 - Gray", "D30 - White",
+        "BOTTOM UP - Black", "BOTTOM UP - Gray", "BOTTOM UP - White",
+        "EXPOSED ROUND - Black", "EXPOSED ROUND - BRONZE", "EXPOSED ROUND - Gray",
+        "EXPOSED ROUND - Vanilla", "EXPOSED ROUND - White",
+        "FABRIC WRAPPED - Black", "FABRIC WRAPPED - BRONZE", "FABRIC WRAPPED - Gray",
+        "FABRIC WRAPPED - Vanilla", "FABRIC WRAPPED - White",
+        "DESIGNER SLIM ARCHITECURAL (NEW) - Anodized",
+        "DESIGNER SLIM ARCHITECURAL (NEW) - Anthracite",
+        "DESIGNER SLIM ARCHITECURAL (NEW) - BLACK",
+        "DESIGNER SLIM ARCHITECURAL (NEW) - Stainless Steel",
+        "DESIGNER SLIM ARCHITECURAL (NEW) - White",
+        "HALF WRAP ARCHITECTURAL HEMBAR (NEW) - BLACK",
+        "HALF WRAP ARCHITECTURAL HEMBAR (NEW) - Anodized",
+        "HALF WRAP ARCHITECTURAL HEMBAR (NEW) - White",
+        "PREMIUM OVAL HEMBAR W/ CAPS (OPEN SIDE HEM)"
+      ]
+    },
+    "RailroadBackFabric": {
+      "label": "Railroad Back Fabric",
+      "type": "select",
+      "options": ["NO", "YES"]
+    },
+    "DualBracketSelection": {
+      "label": "Dual Bracket Selection",
+      "type": "select",
+      "options": [
+        "DOUBLE SQUARE BRACKET - BLACK",
+        "DOUBLE SQUARE BRACKET - GRAY",
+        "DOUBLE SQUARE BRACKET - WHITE"
+      ]
+    }
+  },
+
+  "coupled_shade_additional_fields": {
+    "note": "These fields appear when Style = S45 COUPLED SHADE or S45 DUAL COUPLED SHADE",
+    "NumberOfShades": {
+      "label": "# of Shades (coupled)",
+      "type": "select",
+      "options": ["2", "3", "4", "5", "6"]
+    },
+    "LeftWidth": { "label": "Left Width", "type": "number + fraction" },
+    "LeftCenterWidth": { "label": "Left Center Width", "type": "number + fraction" },
+    "CenterWidth": { "label": "Center Width", "type": "number + fraction" },
+    "Center2Width": { "label": "Center2 Width", "type": "number + fraction" },
+    "RightCenterWidth": { "label": "Right Center Width", "type": "number + fraction" },
+    "RightWidth": { "label": "Right Width", "type": "number + fraction" },
+    "CoupledOverallWidth": {
+      "label": "Coupled Overall Width",
+      "type": "number + fraction",
+      "fraction_options": ["1/16","1/8","3/16","1/4","5/16","3/8","7/16","1/2","9/16","5/8","11/16","3/4","13/16","7/8","15/16"]
+    },
+    "AngleCoupler45_90": {
+      "label": "45-90 Degree Angle Coupler",
+      "type": "select",
+      "options": ["NO"]
+    }
+  },
+
+  "fascia_cassette_additional_fields": {
+    "note": "Appear when Style = S45 CF90 FASCIA or S45 W/ SQUARE CASSETTE 110",
+    "FabricWrapped": {
+      "label": "Fabric Wrapped",
+      "type": "select",
+      "options": ["NO", "YES", "PLEASE SELECT:"]
+    },
+    "FasciaOrPocketBracketCovers": {
+      "label": "Fascia or Pocket Bracket Covers",
+      "type": "select",
+      "options": ["NO"]
+    },
+    "ValanceColor": { "label": "Valance Color", "type": "text" },
+    "BracketColor": { "label": "Bracket Color", "type": "text" },
+    "FasciaType": {
+      "label": "Fascia Type",
+      "type": "select",
+      "options": ["CF90 ROUND", "CF90 SQUARE"]
+    },
+    "FasciaSizeOverride": {
+      "label": "Fascia Size Override",
+      "type": "fraction select",
+      "options": ["1/8", "1/4", "3/8", "1/2", "5/8", "3/4", "7/8"]
+    }
+  },
+
+  "coulisse_additional_fields": {
+    "note": "Appear when Style = COULISSE ABSOLUTE OPEN ROLL or COULISSE ABSOLUTE W/ FASCIA",
+    "CoulisseMountingBar": {
+      "label": "Coulisse mounting bar",
+      "type": "select",
+      "options": ["NO", "YES"]
+    },
+    "CoulisseBracketCovers": {
+      "label": "Coulisse Bracket covers",
+      "type": "select",
+      "options": [
+        "PLASTIC - anthracite", "PLASTIC - Black", "PLASTIC - Grey", "PLASTIC - White",
+        "METAL - Black Nickel", "METAL - Stainless Steel"
+      ]
+    }
+  },
+
+  "motorization_controls": {
+    "note": "Appear when ControlType = SOMFY or ROLLEASE",
+    "SomfyControls": {
+      "label": "Somfy Controls",
+      "type": "select",
+      "options": ["NONE"]
+    },
+    "SomfyControlsII": {
+      "label": "Somfy Controls II",
+      "type": "select",
+      "options": ["NONE"]
+    },
+    "SomfyPowerOptions": {
+      "label": "Somfy Power Options",
+      "type": "select",
+      "options": ["NONE"]
+    },
+    "RolleaseControls": {
+      "label": "Rollease Controls",
+      "type": "select",
+      "options": ["NONE", "BASICS 5 CHANNEL REMOTE"]
+    },
+    "RolleaseControlsII": {
+      "label": "Rollease Controls II",
+      "type": "select",
+      "options": ["NONE"]
+    },
+    "RolleasePowerOptions": {
+      "label": "Rollease Power Options",
+      "type": "select",
+      "options": ["NONE"]
+    },
+    "GaposaControls": {
+      "label": "Gaposa Controls",
+      "type": "select",
+      "options": ["NONE"]
+    },
+    "GaposaControlsII": {
+      "label": "Gaposa Controls II",
+      "type": "select",
+      "options": [
+        "NONE",
+        "EMITTO SLIM LINE SINGLE CHANNEL PORTABLE",
+        "EMITTO SLIM LINE FIVE CHANNEL PORTABLE",
+        "EMITTO SLIM LINE SINGLE CHANNEL WALL-MOUNTED",
+        "EMITTO SLIM LINE FIVE CHANNEL WALL-MOUNTED"
+      ]
+    },
+    "GaposaePowerOptions": {
+      "label": "Gaposa Power and other control Options",
+      "type": "select",
+      "options": [
+        "NONE",
+        "ARM5 POWER AND CONTROL PANEL FOR 5 DRY CONTACT XS50 MOTORS",
+        "SWITCHING POWER SUPPLY 24V 2.5A (XS50)",
+        "UL 4 WIRES POWER CABLE",
+        "UL 3 WIRES POWER CABLE",
+        "POWER CORD EXTENSION 15.5CM WITH PLUGS (FOR DC BAT)",
+        "POWER CORD EXTENSION 122CM WITH PLUGS (FOR DC BATT)",
+        "POWER CORD EXTENSION 244CM WITH PLUGS (FOR DC BATT)"
+      ]
+    }
+  },
+
+  "validation_rules": {
+    "OverallWidth": { "min": 11, "max": 360, "unit": "inches" },
+    "Height": { "min": 14, "max": 230, "unit": "inches" },
+    "ControlType": { "required": true, "error_if": "PLEASE SELECT:" }
+  },
+
+  "quoting_engine_field_mapping": {
+    "note": "How Phase 1B quoting engine fields map to PIC order fields",
+    "fabric_name":     "Pattern/Model (SBM_ prefix lookup via sbm_model_codes)",
+    "color":           "Color (fabric-specific colorway dropdown)",
+    "width_inches":    "OverallWidth (integer + fraction)",
+    "height_inches":   "Height (integer + fraction)",
+    "mount_type":      "Mount (INSIDE MOUNT | OUTSIDE MOUNT)",
+    "style":           "Style (S45 SINGLE SHADE is standard)",
+    "control_type":    "ControlType (SOMFY | ROLLEASE | CHAINWINDER CLUTCH | CRANK...)",
+    "control_side":    "ControlLocation (RIGHT | LEFT)",
+    "roll_direction":  "RollDirection (STANDARD ROLL | REVERSE ROLL)",
+    "tube_size":       "TubeSize (LITE | STD | HEAVY DUTY)",
+    "bracket_finish":  "Brackets (PROJECTION 40/55 × BLACK/GRAY/WHITE)",
+    "hembar_style":    "Hembar (18 options)",
+    "hembar_color":    "OvalHembarEndCapColor (when oval hembar selected)",
+    "room_label":      "RoomLocation (free text)",
+    "qty":             "Qty"
+  }
+}
