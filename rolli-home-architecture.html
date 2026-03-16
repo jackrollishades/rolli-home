@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rolli Home LLC — Quoting Engine Architecture</title>
+<style>
+  :root {
+    --brand: #1a3a5c;
+    --accent: #2e7d9f;
+    --light: #e8f4f8;
+    --green: #2d7a4f;
+    --green-light: #e8f5ed;
+    --yellow: #7a5f00;
+    --yellow-light: #fdf6dc;
+    --red: #7a2d2d;
+    --red-light: #fdf0f0;
+    --grey: #4a4a4a;
+    --border: #c8dce8;
+    --code-bg: #f4f7f9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #222; background: #fafbfc; line-height: 1.6; }
+
+  header { background: var(--brand); color: white; padding: 2.5rem 2rem 2rem; }
+  header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; }
+  header p { opacity: 0.75; font-size: 0.9rem; margin-top: 0.3rem; }
+
+  nav { background: var(--accent); display: flex; gap: 0; overflow-x: auto; }
+  nav a { color: rgba(255,255,255,0.85); text-decoration: none; padding: 0.65rem 1.2rem; font-size: 0.82rem; white-space: nowrap; border-right: 1px solid rgba(255,255,255,0.15); }
+  nav a:hover { background: rgba(255,255,255,0.15); color: white; }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  h2 { font-size: 1.25rem; font-weight: 700; color: var(--brand); margin: 2.5rem 0 1rem; border-bottom: 2px solid var(--border); padding-bottom: 0.4rem; }
+  h3 { font-size: 1rem; font-weight: 700; color: var(--accent); margin: 1.5rem 0 0.6rem; }
+  h4 { font-size: 0.9rem; font-weight: 700; color: var(--grey); margin: 1rem 0 0.4rem; }
+  p { margin-bottom: 0.75rem; font-size: 0.92rem; }
+
+  /* Phase badges */
+  .badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 3px; vertical-align: middle; margin-left: 0.4rem; letter-spacing: 0.04em; }
+  .done  { background: var(--green-light); color: var(--green); border: 1px solid #a8d5b8; }
+  .wip   { background: var(--yellow-light); color: var(--yellow); border: 1px solid #e8d88a; }
+  .plan  { background: #f0f4f8; color: #4a6070; border: 1px solid var(--border); }
+
+  /* Flow diagram */
+  .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 0; margin: 1.5rem 0; }
+  .flow-box { background: var(--light); border: 2px solid var(--accent); border-radius: 6px; padding: 0.5rem 0.9rem; font-size: 0.82rem; font-weight: 600; color: var(--brand); text-align: center; }
+  .flow-box.exists { border-color: var(--green); background: var(--green-light); color: var(--green); }
+  .flow-box.new { border-color: #d4890a; background: #fef7e6; color: #7a5000; }
+  .flow-box.future { border-color: #aaa; background: #f5f5f5; color: #666; border-style: dashed; }
+  .flow-arrow { font-size: 1.2rem; color: #aaa; padding: 0 0.4rem; }
+
+  /* Component cards */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin: 1rem 0; }
+  .card { border: 1px solid var(--border); border-radius: 8px; background: white; overflow: hidden; }
+  .card-head { padding: 0.7rem 1rem; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem; }
+  .card-head.exists { background: var(--green-light); color: var(--green); border-bottom: 1px solid #a8d5b8; }
+  .card-head.new    { background: #fef7e6; color: #7a5000; border-bottom: 1px solid #f0d080; }
+  .card-head.future { background: #f5f5f5; color: #666; border-bottom: 1px solid #ddd; }
+  .card-body { padding: 0.75rem 1rem; font-size: 0.82rem; color: var(--grey); }
+  .card-body ul { padding-left: 1.1rem; }
+  .card-body li { margin-bottom: 0.25rem; }
+  .card-body code { font-family: 'SF Mono', 'Consolas', monospace; background: var(--code-bg); padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.78rem; }
+
+  /* Data model */
+  .model { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.2rem; font-family: 'SF Mono', 'Consolas', monospace; font-size: 0.8rem; line-height: 1.7; overflow-x: auto; margin: 0.75rem 0 1.25rem; white-space: pre; }
+  .model .kw  { color: #0066cc; font-weight: 600; }
+  .model .cls { color: #7700aa; font-weight: 600; }
+  .model .cmt { color: #888; }
+  .model .str { color: #2d7a4f; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 0.83rem; margin: 0.75rem 0 1.25rem; }
+  th { background: var(--brand); color: white; padding: 0.5rem 0.75rem; text-align: left; font-weight: 600; }
+  td { padding: 0.45rem 0.75rem; border-bottom: 1px solid #eee; vertical-align: top; }
+  tr:nth-child(even) td { background: #f8fbfd; }
+
+  /* Decision boxes */
+  .decision { border-left: 4px solid var(--accent); background: var(--light); padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; margin: 0.75rem 0; font-size: 0.88rem; }
+  .decision strong { color: var(--brand); }
+  .decision.warn { border-color: #d4890a; background: #fef7e6; }
+  .decision.note { border-color: #888; background: #f5f5f5; }
+
+  /* Architecture diagram */
+  .arch { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border: 2px solid var(--border); border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
+  .arch-col { border-right: 1px solid var(--border); }
+  .arch-col:last-child { border-right: none; }
+  .arch-col-head { background: var(--brand); color: white; padding: 0.5rem 0.75rem; font-size: 0.8rem; font-weight: 700; text-align: center; }
+  .arch-col-body { padding: 0.75rem; }
+  .arch-item { border: 1px solid var(--border); border-radius: 5px; padding: 0.45rem 0.6rem; margin-bottom: 0.5rem; font-size: 0.78rem; }
+  .arch-item .name { font-weight: 700; font-family: monospace; color: var(--brand); }
+  .arch-item .desc { color: #666; margin-top: 0.15rem; }
+  .arch-item.exists { border-color: #a8d5b8; background: var(--green-light); }
+  .arch-item.new { border-color: #f0d080; background: #fef7e6; }
+  .arch-item.future { border-color: #ddd; background: #f9f9f9; border-style: dashed; }
+
+  .legend { display: flex; gap: 1.2rem; font-size: 0.78rem; margin: 0.5rem 0 1.5rem; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 0.35rem; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 2px; border: 1px solid; }
+  .legend-dot.exists { background: var(--green-light); border-color: #a8d5b8; }
+  .legend-dot.new    { background: #fef7e6; border-color: #f0d080; }
+  .legend-dot.future { background: #f9f9f9; border-color: #ddd; }
+
+  footer { text-align: center; font-size: 0.75rem; color: #aaa; padding: 2rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Rolli Home LLC — Quoting Engine: Full System Architecture</h1>
+  <p>Phase 1B Design Document · March 2026 · Internal Use</p>
+</header>
+
+<nav>
+  <a href="#overview">Overview</a>
+  <a href="#components">Components</a>
+  <a href="#datamodel">Data Model</a>
+  <a href="#dataflow">Data Flow</a>
+  <a href="#files">File Structure</a>
+  <a href="#decisions">Key Decisions</a>
+  <a href="#sequence">Build Sequence</a>
+  <a href="#pic">PIC Integration</a>
+  <a href="#future">Phase 2+</a>
+</nav>
+
+<main>
+
+<!-- ─────────────────────── OVERVIEW ─────────────────────────────────────── -->
+<h2 id="overview">System Overview</h2>
+
+<p>The Rolli Home quoting engine is a <strong>multi-vendor, multi-line-item pricing and order-submission system</strong> for window shade products. It reads raw vendor pricing from structured JSON databases, applies dealer discount factors, computes sell prices at a target margin, generates customer-facing quote documents, and submits orders to the PIC Business Systems portal.</p>
+
+<div class="flow">
+  <div class="flow-box future">Customer / Shopify<br><span style="font-weight:400;font-size:0.72rem">(Phase 2)</span></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box new">Quoting UI<br><span style="font-weight:400;font-size:0.72rem">Internal web form</span></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box new">Quote Engine<br><span style="font-weight:400;font-size:0.72rem">quote_engine.py</span></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box exists">SBM / WSC Pricers<br><span style="font-weight:400;font-size:0.72rem">Already built</span></div>
+</div>
+<div class="flow" style="margin-top:0.25rem;">
+  <div class="flow-box" style="border:0;background:transparent;width:110px">&nbsp;</div>
+  <div class="flow-arrow" style="opacity:0">→</div>
+  <div class="flow-box new">Quote Document<br><span style="font-weight:400;font-size:0.72rem">DOCX/PDF output</span></div>
+  <div class="flow-arrow">&amp;</div>
+  <div class="flow-box new">PIC Mapper<br><span style="font-weight:400;font-size:0.72rem">pic_mapper.py</span></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box new">PIC Automation<br><span style="font-weight:400;font-size:0.72rem">Browser agent</span></div>
+</div>
+
+<div class="legend" style="margin-top:1rem;">
+  <div class="legend-item"><div class="legend-dot exists"></div> Already built</div>
+  <div class="legend-item"><div class="legend-dot new"></div> Phase 1B — build now</div>
+  <div class="legend-item"><div class="legend-dot future"></div> Phase 2+ — future</div>
+</div>
+
+
+<!-- ─────────────────────── COMPONENTS ───────────────────────────────────── -->
+<h2 id="components">Component Inventory</h2>
+
+<div class="arch">
+  <div class="arch-col">
+    <div class="arch-col-head">Layer 1 — Pricing Data &amp; Engines</div>
+    <div class="arch-col-body">
+      <div class="arch-item exists">
+        <div class="name">sbm_pricing_complete.json</div>
+        <div class="desc">SBM price charts (8 charts × 15×17 grids), motorization (Automate / Somfy / Gaposa), surcharges</div>
+      </div>
+      <div class="arch-item exists">
+        <div class="name">wsc_pricing_complete.json</div>
+        <div class="desc">WSC roman (10 groups × 15×17) + roller (10 groups), lining, motorization (Rollease / Somfy)</div>
+      </div>
+      <div class="arch-item exists">
+        <div class="name">sbm_pricer.py</div>
+        <div class="desc">SBMPricer class — quote(), base_dealer_cost(), motorization_dealer_cost(). Factor = 0.36</div>
+      </div>
+      <div class="arch-item exists">
+        <div class="name">wsc_pricer.py</div>
+        <div class="desc">WSCPricer class — quote_roman(), quote_roller(), motor_price(), lining. Factor = 0.50</div>
+      </div>
+      <div class="arch-item exists">
+        <div class="name">shade_selection_rules.md</div>
+        <div class="desc">Tube + motor auto-selection logic from Rollease Acmeda eBOM Calculator v1.26</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arch-col">
+    <div class="arch-col-head">Layer 2 — Quote Engine (Phase 1B)</div>
+    <div class="arch-col-body">
+      <div class="arch-item new">
+        <div class="name">models.py</div>
+        <div class="desc">Dataclasses: LineItemSpec, QuoteRequest, QuotedLineItem, Quote</div>
+      </div>
+      <div class="arch-item new">
+        <div class="name">quote_engine.py</div>
+        <div class="desc">Orchestrates multi-vendor quotes. Calls SBM or WSC pricer per line item. Assembles Quote object.</div>
+      </div>
+      <div class="arch-item new">
+        <div class="name">tube_motor_selector.py</div>
+        <div class="desc">Auto-selects tube size + motor torque from width/height/fabric weight using shade_selection_rules logic</div>
+      </div>
+      <div class="arch-item new">
+        <div class="name">pic_mapper.py</div>
+        <div class="desc">Translates QuotedLineItem → PIC portal field dict using pic_quote_schema.json</div>
+      </div>
+      <div class="arch-item exists">
+        <div class="name">pic_quote_schema.json</div>
+        <div class="desc">Complete PIC field map — already built. Used by pic_mapper.py for validation + submission</div>
+      </div>
+      <div class="arch-item new">
+        <div class="name">config.py</div>
+        <div class="desc">Target margins, PIC account URL, default PIC field values, vendor paths</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arch-col">
+    <div class="arch-col-head">Layer 3 — Outputs (Phase 1B)</div>
+    <div class="arch-col-body">
+      <div class="arch-item new">
+        <div class="name">quote_doc.py</div>
+        <div class="desc">Generates a professional Word (.docx) quote document from a Quote object. Rolli Home branded.</div>
+      </div>
+      <div class="arch-item new">
+        <div class="name">quotes/ (directory)</div>
+        <div class="desc">Saved Quote objects as JSON. Each quote gets a unique ID (e.g. Q-2026-0042). Audit trail.</div>
+      </div>
+      <div class="arch-item new">
+        <div class="name">output/ (directory)</div>
+        <div class="desc">Generated DOCX quote documents and any other output files</div>
+      </div>
+      <div class="arch-item new">
+        <div class="name">pic_automation/ (skill / script)</div>
+        <div class="desc">Browser automation: loads PIC form fields from pic_mapper output, fills and submits PIC portal order</div>
+      </div>
+      <div class="arch-item future">
+        <div class="name">ui/ — Flask/FastAPI app</div>
+        <div class="desc">Internal web UI: line-by-line shade configurator, live pricing, quote export, PIC submit button</div>
+      </div>
+      <div class="arch-item future">
+        <div class="name">shopify_bridge.py</div>
+        <div class="desc">Phase 2: reads Shopify orders → QuoteRequest → PIC submission pipeline</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ─────────────────────── DATA MODEL ───────────────────────────────────── -->
+<h2 id="datamodel">Core Data Model</h2>
+
+<p>All components communicate through a shared set of Python dataclasses defined in <code>models.py</code>. The flow is: <strong>LineItemSpec</strong> (raw input) → <strong>QuotedLineItem</strong> (priced + PIC-mapped) → <strong>Quote</strong> (full document).</p>
+
+<h3>LineItemSpec — one shade being configured</h3>
+<div class="model"><span class="kw">@dataclass</span>
+<span class="kw">class</span> <span class="cls">LineItemSpec</span>:
+    <span class="cmt"># ── Identity ──────────────────────────────────────────────────</span>
+    vendor: str                    <span class="cmt"># "sbm" | "wsc"</span>
+    room_label: str = <span class="str">""</span>          <span class="cmt"># "Master Bedroom", "Living Room" etc.</span>
+    qty: int = 1
+
+    <span class="cmt"># ── Dimensions ────────────────────────────────────────────────</span>
+    width_in: float = <span class="kw">None</span>
+    height_in: float = <span class="kw">None</span>
+
+    <span class="cmt"># ── SBM-specific ──────────────────────────────────────────────</span>
+    fabric: str = <span class="kw">None</span>            <span class="cmt"># e.g. "Sanctuary BO", "Serene"</span>
+    color: str = <span class="kw">None</span>             <span class="cmt"># fabric colorway for PIC</span>
+    top_treatment: str = <span class="kw">None</span>     <span class="cmt"># e.g. "3in_fascia_skyline"</span>
+
+    <span class="cmt"># ── WSC-specific ──────────────────────────────────────────────</span>
+    wsc_product_type: str = <span class="kw">None</span>  <span class="cmt"># "roman" | "roller"</span>
+    wsc_group: int = <span class="kw">None</span>         <span class="cmt"># 1–10</span>
+    wsc_style: str = <span class="kw">None</span>         <span class="cmt"># "101-Pacifica" | "104-Laguna"</span>
+    lining: str = <span class="kw">None</span>            <span class="cmt"># None | "blackout" | "privacy_satinsheen" | "jute"</span>
+    lifting_system: str = <span class="kw">None</span>   <span class="cmt"># None | "cordless" | "cco" | "slide_winder"</span>
+    top_down: bool = <span class="kw">False</span>
+    cords_forward: bool = <span class="kw">False</span>
+    valance_height_in: int = 6
+
+    <span class="cmt"># ── Motorization (both vendors) ────────────────────────────────</span>
+    motor_brand: str = <span class="kw">None</span>       <span class="cmt"># "automate" | "somfy" | "gaposa" | "rollease"</span>
+    motor_category: str = <span class="kw">None</span>   <span class="cmt"># SBM only: "radio_110v", "battery_integrated" etc.</span>
+    motor_key: str = <span class="kw">None</span>         <span class="cmt"># e.g. "35mm_quiet_6nm", "1_1nm_battery"</span>
+    remote_brand: str = <span class="kw">None</span>
+    remote_key: str = <span class="kw">None</span>
+
+    <span class="cmt"># ── PIC order fields (SBM only — auto-populated with defaults) ─</span>
+    mount: str = <span class="str">"INSIDE MOUNT"</span>
+    pic_style: str = <span class="str">"S45 SINGLE SHADE"</span>
+    control_type: str = <span class="kw">None</span>     <span class="cmt"># derived from motor_brand | "CHAINWINDER CLUTCH"</span>
+    control_side: str = <span class="str">"RIGHT"</span>
+    roll_direction: str = <span class="str">"STANDARD ROLL"</span>
+    tube_size: str = <span class="kw">None</span>         <span class="cmt"># auto from tube_motor_selector; fallback "LITE"</span>
+    bracket_finish: str = <span class="str">"PROJECTION 40 - WHITE"</span>
+    hembar_style: str = <span class="str">"PREMIUM OVAL HEMBAR W/ END CAPS (OPEN SIDE HEM)"</span>
+    hembar_color: str = <span class="kw">None</span>
+    special_instructions: str = <span class="str">""</span></div>
+
+<h3>QuoteRequest — the full order being priced</h3>
+<div class="model"><span class="kw">@dataclass</span>
+<span class="kw">class</span> <span class="cls">QuoteRequest</span>:
+    customer_name: str
+    project_name: str
+    sidemark: str                  <span class="cmt"># → PIC Sidemark field</span>
+    items: List[LineItemSpec]      <span class="cmt"># one per shade / per room</span>
+
+    customer_po: str = <span class="str">""</span>        <span class="cmt"># → PIC Customer PO</span>
+    service_type: str = <span class="str">"INSTALLATION"</span>  <span class="cmt"># → PIC Services dropdown</span>
+    target_margin: float = 0.40   <span class="cmt"># default 40% gross margin</span>
+    notes: str = <span class="str">""</span>              <span class="cmt"># → PIC General Comments</span></div>
+
+<h3>Quote — computed output</h3>
+<div class="model"><span class="kw">@dataclass</span>
+<span class="kw">class</span> <span class="cls">Quote</span>:
+    request: QuoteRequest
+    quote_number: str              <span class="cmt"># e.g. "Q-2026-0042" (auto-assigned)</span>
+    created_at: datetime
+    line_items: List[QuotedLineItem]
+
+    total_dealer_cost: float       <span class="cmt"># sum of all dealer costs</span>
+    total_sell_price: float        <span class="cmt"># sum of all sell prices</span>
+    total_msrp: float
+    blended_margin: float          <span class="cmt"># (sell - cost) / sell across all items</span>
+
+<span class="kw">@dataclass</span>
+<span class="kw">class</span> <span class="cls">QuotedLineItem</span>:
+    spec: LineItemSpec             <span class="cmt"># original input</span>
+    pricing: dict                  <span class="cmt"># raw pricer return value</span>
+    pic_fields: dict               <span class="cmt"># PIC-ready field dict (SBM items only)</span>
+
+    dealer_cost: float             <span class="cmt"># total dealer cost for this item × qty</span>
+    sell_price: float              <span class="cmt"># suggested retail × qty</span>
+    msrp: float</div>
+
+
+<!-- ─────────────────────── DATA FLOW ─────────────────────────────────────── -->
+<h2 id="dataflow">Data Flow — Step by Step</h2>
+
+<table>
+  <thead><tr><th>#</th><th>Step</th><th>Input</th><th>Output</th><th>Component</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>User fills out a shade spec (fabric, dims, options)</td><td>Human / web form</td><td><code>LineItemSpec</code></td><td>UI / CLI / script</td></tr>
+    <tr><td>2</td><td>Group multiple shades into an order</td><td>N × <code>LineItemSpec</code></td><td><code>QuoteRequest</code></td><td>UI / CLI</td></tr>
+    <tr><td>3</td><td>Auto-select tube + motor if not specified</td><td><code>LineItemSpec</code> (dims + fabric)</td><td>Updated <code>LineItemSpec</code></td><td><code>tube_motor_selector.py</code></td></tr>
+    <tr><td>4</td><td>Price each line item</td><td><code>LineItemSpec</code></td><td><code>pricing</code> dict</td><td><code>sbm_pricer.py</code> or <code>wsc_pricer.py</code></td></tr>
+    <tr><td>5</td><td>Map each SBM item to PIC fields</td><td><code>LineItemSpec</code> + <code>pricing</code></td><td><code>pic_fields</code> dict</td><td><code>pic_mapper.py</code></td></tr>
+    <tr><td>6</td><td>Assemble full Quote</td><td><code>QuoteRequest</code> + priced items</td><td><code>Quote</code> object</td><td><code>quote_engine.py</code></td></tr>
+    <tr><td>7</td><td>Save quote to disk</td><td><code>Quote</code></td><td><code>quotes/Q-2026-XXXX.json</code></td><td><code>quote_engine.py</code></td></tr>
+    <tr><td>8</td><td>Generate quote document</td><td><code>Quote</code></td><td><code>output/Q-2026-XXXX.docx</code></td><td><code>quote_doc.py</code></td></tr>
+    <tr><td>9</td><td>Submit order to PIC</td><td><code>Quote.pic_fields</code> per item</td><td>PIC order confirmation</td><td><code>pic_automation/</code> (browser agent)</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ─────────────────────── FILE STRUCTURE ───────────────────────────────── -->
+<h2 id="files">Repository File Structure</h2>
+
+<div class="model"><span class="cmt">rolli-home/</span>
+├── <span class="cmt"># ── EXISTING ────────────────────────────────────────</span>
+├── sbm_pricer.py
+├── sbm_pricing_complete.json
+├── wsc_pricer.py
+├── wsc_pricing_complete.json
+├── pic_quote_schema.json
+├── shade_selection_rules.md
+├── competitive_pricing_analysis.md
+├── test_quote.py
+│
+├── <span class="cmt"># ── PHASE 1B — NEW ──────────────────────────────────</span>
+├── models.py                  <span class="cmt"># LineItemSpec, QuoteRequest, Quote, QuotedLineItem</span>
+├── config.py                  <span class="cmt"># margins, PIC URL, defaults, paths</span>
+├── quote_engine.py            <span class="cmt"># QuoteEngine class — main orchestrator</span>
+├── tube_motor_selector.py     <span class="cmt"># auto-selects tube size + motor torque</span>
+├── pic_mapper.py              <span class="cmt"># SBM QuotedLineItem → PIC field dict</span>
+├── quote_doc.py               <span class="cmt"># Quote → .docx document</span>
+│
+├── quotes/                    <span class="cmt"># saved Quote JSON files</span>
+│   └── Q-2026-0001.json
+│
+├── output/                    <span class="cmt"># generated DOCX quote documents</span>
+│   └── Q-2026-0001.docx
+│
+├── pic_automation/            <span class="cmt"># PIC portal browser automation</span>
+│   ├── SKILL.md               <span class="cmt"># Claude in Chrome skill definition</span>
+│   └── pic_submit.py          <span class="cmt"># Playwright fallback script</span>
+│
+├── <span class="cmt"># ── PHASE 1C / FUTURE ───────────────────────────────</span>
+└── ui/
+    ├── app.py                 <span class="cmt"># Flask/FastAPI internal quoting UI</span>
+    └── templates/</div>
+
+
+<!-- ─────────────────────── KEY DECISIONS ────────────────────────────────── -->
+<h2 id="decisions">Key Architecture Decisions</h2>
+
+<h3>Document format: DOCX (Word)</h3>
+<div class="decision">
+  <strong>Decision:</strong> Generate quote documents as <code>.docx</code> files using python-docx.<br>
+  <strong>Rationale:</strong> DOCX is editable (you can tweak a quote before sending), opens natively in Word / Google Docs, prints well, and is the industry standard for B2B quotes. PDF is appropriate for the final version — generate it from the DOCX via Word's print-to-PDF or LibreOffice. The <code>docx</code> skill provides battle-tested patterns for creating professional Word documents.
+</div>
+
+<h3>Quote storage: JSON files (no database)</h3>
+<div class="decision">
+  <strong>Decision:</strong> Save each Quote as a JSON file in <code>quotes/</code> using the quote number as filename.<br>
+  <strong>Rationale:</strong> Volume is low (dozens of quotes per month, not thousands). JSON files are human-readable, diffable in git, require zero infrastructure, and can be trivially migrated to a database later. Quote numbers use format <code>Q-YYYY-NNNN</code> (auto-incremented from the highest existing file).
+</div>
+
+<h3>PIC automation: Claude in Chrome skill</h3>
+<div class="decision">
+  <strong>Decision:</strong> Implement PIC portal automation as a Claude in Chrome skill that reads a Quote JSON and fills the PIC form, with a Playwright fallback script.<br>
+  <strong>Rationale:</strong> The PIC portal uses a complex multi-step form with conditional fields. Browser automation is the most robust approach — it doesn't require reverse-engineering the API. Claude in Chrome can handle conditional field logic dynamically. A Playwright script is included as a headless fallback for batch submissions.
+</div>
+
+<h3>Tube / motor auto-selection: deterministic rule engine</h3>
+<div class="decision">
+  <strong>Decision:</strong> Implement <code>tube_motor_selector.py</code> as a pure rule-based function using the practical thresholds from <code>shade_selection_rules.md</code>. Always expose the auto-selected values to the user before submission.<br>
+  <strong>Rationale:</strong> The Rollease Acmeda eBOM calculator uses deflection math. The practical thresholds in <code>shade_selection_rules.md</code> cover 95%+ of standard residential installs. Auto-selection saves time but must be reviewable and overridable — never silently commit a motor selection.
+</div>
+
+<h3>PIC field control_type: derived from motor_brand</h3>
+<div class="decision warn">
+  <strong>Watch-out:</strong> The PIC <code>ControlType</code> field maps as follows: Automate/Rollease → <code>"ROLLEASE"</code> (they share the same PIC motor catalog), Somfy → <code>"SOMFY"</code>, Gaposa → handled separately (Gaposa controls appear in the Gaposa section). Manual → <code>"CHAINWINDER CLUTCH"</code> (standard) or crank options.<br>
+  <strong>Action:</strong> <code>pic_mapper.py</code> must implement this derivation rule explicitly — it's not obvious from the schema alone.
+</div>
+
+<h3>WSC orders: not in PIC (Fabritec portal — Phase 1C)</h3>
+<div class="decision note">
+  <strong>Note:</strong> WSC/Fabritec orders go through Fabritec's own portal, not PIC. Phase 1B's PIC mapper only applies to SBM line items. WSC line items in a quote will appear in the quote document but require manual Fabritec portal entry until Phase 1C maps the Fabritec portal fields.
+</div>
+
+
+<!-- ─────────────────────── BUILD SEQUENCE ───────────────────────────────── -->
+<h2 id="sequence">Recommended Build Sequence</h2>
+
+<table>
+  <thead><tr><th>Order</th><th>File</th><th>What to build</th><th>Depends on</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><code>models.py</code></td><td>Define all dataclasses. No logic, just the data shapes. Include JSON serialization helpers (to_dict / from_dict) for saving/loading quotes.</td><td>Nothing</td></tr>
+    <tr><td>2</td><td><code>config.py</code></td><td>DEFAULT_MARGIN, PIC_URL, DEFAULT_PIC_FIELDS (bracket finish, hembar, mount), data file paths.</td><td>Nothing</td></tr>
+    <tr><td>3</td><td><code>tube_motor_selector.py</code></td><td>auto_select(width_in, height_in, fabric_weight_class) → (tube_size_str, recommended_motor_nm). Used to pre-fill LineItemSpec if motor_key not specified.</td><td>shade_selection_rules.md logic</td></tr>
+    <tr><td>4</td><td><code>quote_engine.py</code></td><td>QuoteEngine.price(QuoteRequest) → Quote. Iterates items, calls sbm/wsc pricer, assembles QuotedLineItems, totals, assigns quote number, saves JSON.</td><td>models, config, sbm_pricer, wsc_pricer, tube_motor_selector</td></tr>
+    <tr><td>5</td><td><code>pic_mapper.py</code></td><td>map_to_pic(QuotedLineItem) → dict of PIC field names → values. Validates against pic_quote_schema.json. Includes control_type derivation logic.</td><td>models, pic_quote_schema.json</td></tr>
+    <tr><td>6</td><td><code>quote_doc.py</code></td><td>QuoteDocGenerator.generate(Quote, output_path). Rolli Home header, customer/project info, line item table (room, description, dims, qty, sell price), totals, T&amp;C footer.</td><td>models, python-docx</td></tr>
+    <tr><td>7</td><td><code>pic_automation/SKILL.md</code></td><td>Claude in Chrome skill that: (1) loads a Quote JSON, (2) navigates PIC portal, (3) fills header fields, (4) iterates SBM line items and fills each form, (5) confirms submission.</td><td>pic_mapper output, PIC portal access</td></tr>
+    <tr><td>8</td><td>Test harness</td><td>End-to-end test: create a QuoteRequest with 3 SBM shades + 1 WSC roman → price it → generate DOCX → verify PIC field dict. Use existing test_quote.py pattern.</td><td>All above</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ─────────────────────── PIC INTEGRATION DETAIL ───────────────────────── -->
+<h2 id="pic">PIC Portal Integration — Detail</h2>
+
+<h3>Order flow in PIC</h3>
+<p>Based on <code>pic_quote_schema.json</code>, the PIC portal uses a two-step flow:</p>
+<div class="flow">
+  <div class="flow-box">1. Sales Order Header<br><span style="font-weight:400;font-size:0.72rem">Sidemark, PO, Client, Service, Comments</span></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">2. Add Line Item (repeat)<br><span style="font-weight:400;font-size:0.72rem">Group → Product → Pattern → all fields</span></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">3. Submit Order</div>
+</div>
+
+<h3>PIC field mapping for SBM line items</h3>
+<table>
+  <thead><tr><th>Quote Engine Field</th><th>PIC Field</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td><code>request.sidemark</code></td><td>Sidemark</td><td>Set at order level</td></tr>
+    <tr><td><code>request.customer_po</code></td><td>CustomerPO</td><td>Order level</td></tr>
+    <tr><td><code>request.service_type</code></td><td>serviceId</td><td>"INSTALLATION" default</td></tr>
+    <tr><td><code>item.fabric</code></td><td>Pattern/Model</td><td>Look up in sbm_model_codes; prefix "SBM "</td></tr>
+    <tr><td><code>item.color</code></td><td>Color</td><td>Colorway dropdown — fabric-specific</td></tr>
+    <tr><td><code>item.qty</code></td><td>Qty</td><td></td></tr>
+    <tr><td><code>item.width_in</code></td><td>OverallWidth</td><td>Split into integer + fraction dropdown</td></tr>
+    <tr><td><code>item.height_in</code></td><td>Height</td><td>Split into integer + fraction dropdown</td></tr>
+    <tr><td><code>item.mount</code></td><td>Mount</td><td>"INSIDE MOUNT" | "OUTSIDE MOUNT"</td></tr>
+    <tr><td><code>item.pic_style</code></td><td>Style</td><td>"S45 SINGLE SHADE" default</td></tr>
+    <tr><td>derived from <code>motor_brand</code></td><td>ControlType</td><td>automate/rollease→"ROLLEASE", somfy→"SOMFY", none→"CHAINWINDER CLUTCH"</td></tr>
+    <tr><td><code>item.control_side</code></td><td>ControlLocation</td><td>"RIGHT" default</td></tr>
+    <tr><td><code>item.roll_direction</code></td><td>RollDirection</td><td>"STANDARD ROLL" default</td></tr>
+    <tr><td>auto from tube_motor_selector</td><td>TubeSize</td><td>"LITE" | "STD" | "HEAVY DUTY"</td></tr>
+    <tr><td><code>item.bracket_finish</code></td><td>Brackets</td><td>"PROJECTION 40 - WHITE" default</td></tr>
+    <tr><td><code>item.hembar_style</code></td><td>Hembar</td><td>PREMIUM OVAL HEMBAR W/ END CAPS default</td></tr>
+    <tr><td><code>item.hembar_color</code></td><td>OvalHembarEndCapColor</td><td>Only when oval hembar selected</td></tr>
+    <tr><td><code>item.room_label</code></td><td>RoomLocation</td><td>Free text</td></tr>
+    <tr><td><code>item.special_instructions</code></td><td>Description (Special Instruction tab)</td><td></td></tr>
+  </tbody>
+</table>
+
+<h3>Width / Height fraction handling</h3>
+<div class="decision">
+  <strong>Issue:</strong> PIC uses an integer + fraction dropdown for width and height (e.g., 48 + "1/4" = 48.25"). The quote engine stores dimensions as floats.<br>
+  <strong>Solution:</strong> <code>pic_mapper.py</code> includes a <code>float_to_pic_fraction(value)</code> helper that splits a float into its integer part and nearest 1/8" fraction, then returns the matching PIC dropdown value. E.g., 48.25 → (48, "1/4"), 48.375 → (48, "3/8").
+</div>
+
+
+<!-- ─────────────────────── PHASE 2+ ─────────────────────────────────────── -->
+<h2 id="future">Phase 2+ — Future Extensions</h2>
+
+<h3>Phase 1C — WSC / Fabritec portal automation</h3>
+<p>Map WSC line items to Fabritec's own order portal fields (field mapping TBD — requires a live session to capture the Fabritec portal schema, as was done for PIC). Same browser automation approach as PIC.</p>
+
+<h3>Phase 2 — Shopify customer configurator</h3>
+<p>A customer-facing Shopify product page where users select fabric, dimensions, and options. On checkout, Shopify sends an order webhook to a lightweight API endpoint (<code>shopify_bridge.py</code>) that converts the order into a <code>QuoteRequest</code> and feeds it through the quote engine. PIC submission happens automatically or on staff review. The internal quoting UI (Phase 1C) becomes the review dashboard.</p>
+
+<h3>Internal quoting UI (Phase 1C)</h3>
+<p>A simple Flask or FastAPI web app (runs locally, not public) with a multi-line shade configurator form. Replaces editing Python dicts or JSON by hand. Outputs a Quote, generates the DOCX, and has a "Submit to PIC" button that triggers the browser automation.</p>
+
+<table>
+  <thead><tr><th>Phase</th><th>Deliverable</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>1A</td><td>SBM + WSC pricing engines, pricing JSONs, discount factor verification</td><td><span class="badge done">✅ DONE</span></td></tr>
+    <tr><td>1B</td><td>Quote engine, data model, pic_mapper, quote_doc, PIC browser automation</td><td><span class="badge wip">🔄 THIS PHASE</span></td></tr>
+    <tr><td>1C</td><td>Internal quoting UI, Fabritec portal field map + automation</td><td><span class="badge plan">PLANNED</span></td></tr>
+    <tr><td>2</td><td>Shopify customer configurator, order webhook pipeline</td><td><span class="badge plan">PLANNED</span></td></tr>
+  </tbody>
+</table>
+
+</main>
+
+<footer>Rolli Home LLC — Internal Architecture Document · Generated March 2026 · Not for distribution</footer>
+</body>
+</html>
