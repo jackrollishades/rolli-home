@@ -1,0 +1,144 @@
+{
+  "vendor": "TWO USA / Colourvue Essentials",
+  "catalog_version": "V.02.10.26",
+  "price_type": "dealer",
+  "note": "These ARE Rolli Home dealer prices (not retail). No additional discount factor needed.",
+  "dealer_factor": 1.0,
+  "system": "S45",
+  "base_prices": {
+    "manual": 75,
+    "motorized_automate_1way_rf": 125,
+    "cordless_esa": null
+  },
+  "fabric_groups": {
+    "group_1_screens": {
+      "rate_per_sqft": 1.25,
+      "fabrics": ["Kleenscreen 1%", "Kleenscreen 3%", "Kleenscreen 5%"]
+    },
+    "group_2_light_filtering": {
+      "rate_per_sqft": 1.75,
+      "fabrics": ["Tusk Light Filtering", "Jersey Light Filtering", "Mesa Light Filtering"]
+    },
+    "group_3_blackout": {
+      "rate_per_sqft": 2.25,
+      "fabrics": ["Tusk Blackout", "Jersey Blackout", "Mesa Blackout", "Kleenscreen Blackout", "Vista Blackout"]
+    }
+  },
+  "width_surcharges": {
+    "36_to_48": 25,
+    "48_to_72": 50,
+    "72_to_96": 75,
+    "over_96": 100
+  },
+  "fabric_details": [
+    {
+      "fabric": "Tusk",
+      "style": "Light Filtering",
+      "group": 2,
+      "colors": ["Beach", "Coconut", "Pepper", "Slate", "Whisper"]
+    },
+    {
+      "fabric": "Tusk",
+      "style": "Blackout",
+      "group": 3,
+      "colors": ["Beach", "Coconut", "Pepper", "Slate", "Whisper"]
+    },
+    {
+      "fabric": "Jersey",
+      "style": "Light Filtering",
+      "group": 2,
+      "colors": ["Opal", "Pavement", "Render", "Stone", "Timber"]
+    },
+    {
+      "fabric": "Jersey",
+      "style": "Blackout",
+      "group": 3,
+      "colors": ["Opal", "Pavement", "Render", "Stone", "Timber"]
+    },
+    {
+      "fabric": "Mesa",
+      "style": "Light Filtering",
+      "group": 2,
+      "colors": ["Dove White", "Ice Gray", "Moonstone", "Nougat", "Quill"]
+    },
+    {
+      "fabric": "Mesa",
+      "style": "Blackout",
+      "group": 3,
+      "colors": ["Black", "Dove White", "Ice Gray", "Mist", "Moonstone", "Nougat", "Quill"]
+    },
+    {
+      "fabric": "Kleenscreen 1%",
+      "style": "Screen",
+      "group": 1,
+      "colors": ["Barley", "Black", "Graphite", "Pure White", "Alloy", "Canyon", "Raven", "Ash"]
+    },
+    {
+      "fabric": "Kleenscreen 3%",
+      "style": "Screen",
+      "group": 1,
+      "colors": ["Barley", "Black", "Graphite", "Pure White", "Alloy", "Canyon", "Raven", "Ash"]
+    },
+    {
+      "fabric": "Kleenscreen 5%",
+      "style": "Screen",
+      "group": 1,
+      "colors": ["Barley", "Black", "Graphite", "Pure White", "Alloy", "Canyon", "Raven", "Ash"]
+    },
+    {
+      "fabric": "Kleenscreen",
+      "style": "Blackout",
+      "group": 3,
+      "colors": ["Ice", "Barley", "Alloy", "Pumice", "Shale", "Graphite", "Black"]
+    },
+    {
+      "fabric": "Vista",
+      "style": "Blackout",
+      "group": 3,
+      "colors": ["Surf", "Sand", "Pumice", "Paperbark", "Driftwood"]
+    }
+  ],
+  "options": {
+    "decorative_covers": {
+      "roll_only_open_roll": -25,
+      "cassette_neuvo": 0,
+      "cassette_neuvo_fabric_wrapped": 15
+    },
+    "hem_bars": {
+      "concealed": 0,
+      "fabric_wrapped": 15,
+      "designer": 20
+    },
+    "side_channels": {
+      "side_only": 75,
+      "bottom_only": 35,
+      "side_and_bottom": 100,
+      "l_block_angles_each": 35
+    },
+    "magnetic_door_hold_downs": 20,
+    "controls": {
+      "5_channel_remote": 15,
+      "magnetic_wall_charger": 30,
+      "whispertech_connect_pro_hub": 200
+    }
+  },
+  "shipping": {
+    "up_to_92in_wide": 50,
+    "over_92in_to_118in_ltl": 350,
+    "ltl_residential_delivery": 250
+  },
+  "product_limits": {
+    "max_width_warranty": 96,
+    "max_drop_warranty": 108,
+    "express_2day_fabrics": [
+      "Capri Privacy - Charcoal/Charcoal",
+      "Capri Privacy - White/White",
+      "Capri 5% - Charcoal/Charcoal",
+      "Capri 5% - White/White",
+      "Havana - White",
+      "Havana - Putty",
+      "Zurich - French Milky",
+      "Zurich Mirror"
+    ]
+  }
+}

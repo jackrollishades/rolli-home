@@ -83,6 +83,26 @@ VENDOR_REGISTRY = {
         "products":      ["roller_shade"],
         "notes":         "45% off — awaiting price catalog PDF from Liam/Brian",
     },
+    "two": {
+        "name":          "TWO USA / Colourvue Essentials",
+        "pricer_module": "two_pricer",
+        "pricer_class":  "TWOPricer",
+        "data_file":     "two_pricing_complete.json",
+        "dealer_factor": None,   # TBD — pricing not yet captured
+        "pic_account":   None,   # TWO uses own ordering system
+        "phases":        ["spec"],
+        "products":      ["roller_shade"],
+        "notes":         "Specs mapped from Colourvue Essentials V.07.30.25. "
+                         "Pricing separate — contact TWO USA sales rep. "
+                         "Express 2-Day program available. S45 system, Whispertech + Automate motors.",
+        "spec_file":     "two_colourvue_specs.json",  # in Quote_Master/TWO/
+        "fabrics":       ["Capri Privacy", "Capri 5%", "Havana", "London",
+                          "Patagonia", "Rio", "Zurich"],
+        "motors":        ["Whispertech Rechargeable", "Whispertech AC",
+                          "Whispertech DC", "Automate (Rollease Acmeda)"],
+        "max_width_warranty": 96,
+        "max_drop_warranty":  108,
+    },
 }
 
 

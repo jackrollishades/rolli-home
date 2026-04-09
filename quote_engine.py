@@ -186,6 +186,62 @@ class QuoteEngine:
                 margin = result.get("gross_margin", "0%")
                 qi.gross_margin_pct = float(str(margin).rstrip("%"))
 
+            elif vendor_key == "ucs":
+                # UCS: route by chart key or by fabric name
+                if spec.ucs_chart:
+                    result = pricer.quote(
+                        chart=spec.ucs_chart,
+                        width_in=spec.width_in,
+                        height_in=spec.height_in,
+                        fabric=spec.fabric,
+                        color=spec.color,
+                        target_margin=target_margin,
+                    )
+                elif spec.fabric:
+                    result = pricer.quote_by_fabric(
+                        fabric=spec.fabric,
+                        width_in=spec.width_in,
+                        height_in=spec.height_in,
+                        color=spec.color,
+                        target_margin=target_margin,
+                    )
+                else:
+                    qi.errors.append(
+                        "UCS quote requires either ucs_chart or fabric name."
+                    )
+                    return qi
+                qi.line_items     = result.get("line_items", [])
+                qi.dealer_cost    = result.get("dealer_cost", 0)
+                qi.sell_price     = result.get("sell_price", 0)
+                qi.srp            = result.get("srp", 0)
+                margin = result.get("gross_margin", "0%")
+                qi.gross_margin_pct = float(str(margin).rstrip("%"))
+
+            elif vendor_key == "two":
+                result = pricer.quote(
+                    fabric=spec.fabric or "",
+                    width_in=spec.width_in,
+                    height_in=spec.height_in,
+                    fabric_style=spec.two_fabric_style,
+                    color=spec.color,
+                    motorized=bool(spec.motor_brand or spec.motor_key),
+                    cover=spec.two_cover or "cassette_neuvo",
+                    hem_bar=spec.two_hem_bar or "concealed",
+                    side_channels=spec.two_side_channels,
+                    door_hold_down=spec.two_door_hold_down or False,
+                    remote_5ch=spec.two_remote_5ch or False,
+                    wall_charger=spec.two_wall_charger or False,
+                    connect_pro_hub=spec.two_connect_pro_hub or False,
+                    fabric_wrapped_cassette=spec.two_fabric_wrapped_cassette or False,
+                    target_margin=target_margin,
+                )
+                qi.line_items     = result.get("line_items", [])
+                qi.dealer_cost    = result.get("dealer_cost", 0)
+                qi.sell_price     = result.get("sell_price", 0)
+                qi.srp            = result.get("srp", 0)
+                margin = result.get("gross_margin", "0%")
+                qi.gross_margin_pct = float(str(margin).rstrip("%"))
+
             else:
                 qi.errors.append(
                     f"Vendor '{vendor_key}' is registered but no routing logic exists yet. "

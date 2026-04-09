@@ -46,6 +46,20 @@ class LineItemSpec:
     # ── STS-specific
     sts_style: Optional[str] = None      # e.g. "101-Pacifica"
 
+    # ── UCS-specific
+    ucs_chart: Optional[str] = None      # e.g. "light_filtering_chart_1"
+
+    # ── TWO-specific
+    two_fabric_style: Optional[str] = None          # e.g. "Light Filtering" | "Blackout" | "Screen"
+    two_cover: Optional[str] = None                 # "cassette_neuvo" | "cassette_elite" | "roll_only"
+    two_hem_bar: Optional[str] = None               # "concealed" | "fabric_wrapped" | "designer"
+    two_side_channels: Optional[str] = None         # "side_only" | "bottom_only" | "side_and_bottom"
+    two_door_hold_down: bool = False
+    two_remote_5ch: bool = False
+    two_wall_charger: bool = False
+    two_connect_pro_hub: bool = False
+    two_fabric_wrapped_cassette: bool = False
+
     # ── Motorization
     motor_brand: Optional[str] = None    # "automate" | "somfy" | "gaposa"
     motor_category: Optional[str] = None # "radio_110v" | "battery_integrated" | etc.
